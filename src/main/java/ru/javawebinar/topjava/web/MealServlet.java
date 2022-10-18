@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.MealTo;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,5 +33,10 @@ public class MealServlet extends HttpServlet {
         log.debug("forward to meals");
                 request.getRequestDispatcher("/meal.jsp").forward(request, response);
 //        response.sendRedirect("users.jsp");
+    }
+
+    private int getId(HttpServletRequest request){
+        String paramId = Objects.requireNonNull(request.getParameter("id"));
+        return paramId.matches("^\\d+$") ? Integer.parseInt(paramId) : 0;
     }
 }

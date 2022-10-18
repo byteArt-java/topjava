@@ -4,28 +4,60 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UserMealWithExcess {
-    private final LocalDateTime dateTime;
+    protected Integer id;
 
-    private final String description;
+    protected final LocalDateTime dateTime;
 
-    private final int calories;
+    protected final String description;
 
-    private final AtomicBoolean excess;
+    protected final int calories;
 
-    public UserMealWithExcess(LocalDateTime dateTime, String description, int calories, AtomicBoolean excess) {
+    protected final boolean exceed;
+
+    public UserMealWithExcess(Integer id, LocalDateTime dateTime, String description, int calories, boolean exceed) {
+        this.id = id;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.excess = excess;
+        this.exceed = exceed;
+    }
+
+    public UserMealWithExcess(LocalDateTime dateTime, String description, int calories, boolean exceed) {
+        this(null,dateTime,description,calories,exceed);
     }
 
     @Override
     public String toString() {
         return "UserMealWithExcess{" +
-                "dateTime=" + dateTime +
+                "id=" + id +
+                ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
-                ", excess=" + excess +
+                ", exceed=" + exceed +
                 '}';
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public boolean getExcess() {
+        return exceed;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public boolean isExcess() {
+        return exceed;
     }
 }
