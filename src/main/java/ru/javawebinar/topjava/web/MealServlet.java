@@ -1,7 +1,11 @@
 package ru.javawebinar.topjava.web;
 
+import org.apache.taglibs.standard.lang.jstl.test.PageContextImpl;
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.model.MealTo;
+import org.slf4j.LoggerFactory;
+import ru.javawebinar.topjava.model.UserMeal;
+import ru.javawebinar.topjava.repository.InMemoryUserMealRepository;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -10,29 +14,54 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.slf4j.LoggerFactory.getLogger;
+import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
-    private static final Logger log = getLogger(MealServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MealServlet.class);
+    private InMemoryUserMealRepository repository;
 
-    private static final List<MealTo> mealList = Arrays.asList(
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-            new MealTo(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
-    );
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        repository = new InMemoryUserMealRepository();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String id = request.getParameter("id");
+        UserMeal userMeal = new UserMeal(id.isEmpty() ? null : Integer.valueOf(id),
+                LocalDateTime.parse(request.getParameter("dateTime")),
+                request.getParameter("description"),Integer.valueOf(request.getParameter("calories")));
+        LOGGER.info(userMeal.isNew() ? "Create {} " : "Update {}",userMeal);
+        repository.save(userMeal);
+        response.sendRedirect("meals");
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("forward to meals");
-                request.getRequestDispatcher("/meal.jsp").forward(request, response);
-//        response.sendRedirect("users.jsp");
+        LOGGER.info("forward to meals");
+        String action = request.getParameter("action");
+        if (action == null){
+            request.setAttribute("mealList", MealsUtil.getWithExceeded(repository.getAll()
+                    ,MealsUtil.DEFAULT_CALORIES_PER_DAY));
+            request.getRequestDispatcher("/mealList.jsp").forward(request, response);
+        }else if (action.equals("delete")){
+            int id = getId(request);
+            LOGGER.info("Delete {}",id);
+            repository.delete(id);
+            response.sendRedirect("meals");
+        }else {
+            final UserMeal meal = action.equals("create") ?
+                    new UserMeal(LocalDateTime.now(),"",1000) :
+                    repository.get(getId(request));
+            request.setAttribute("meal",meal);
+            request.getRequestDispatcher("mealEdit.jsp").forward(request,response);
+        }
+
+
     }
 
     private int getId(HttpServletRequest request){
