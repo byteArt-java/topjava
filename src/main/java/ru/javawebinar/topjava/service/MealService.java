@@ -1,10 +1,8 @@
 package ru.javawebinar.topjava.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.InMemoryMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDate;
@@ -16,9 +14,9 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
-    private final InMemoryMealRepository repository;
+    private final MealRepository repository;
 
-    public MealService(InMemoryMealRepository repository) {
+    public MealService(MealRepository repository) {
         this.repository = repository;
     }
 

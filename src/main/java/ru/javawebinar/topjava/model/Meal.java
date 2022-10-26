@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Meal extends AbstractBaseEntity{
 
-
     private final LocalDateTime dateTime;
 
     private final String description;
