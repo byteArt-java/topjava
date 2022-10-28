@@ -18,6 +18,8 @@ FROM meals;
 
 ALTER SEQUENCE global_seq_meals RESTART WITH 1;
 
-INSERT INTO meals (dateTime, description, calories)
-VALUES ('2015-06-01 14:00:12.66', 'lunch', '510'),
-('2015-06-01 21:00:12.66', 'dinner', '1500');
+INSERT INTO meals (dateTime, description, calories,user_id)
+VALUES ('2015-06-01 12:00', 'lunch', '510',100000),
+('2015-06-01 21:00', 'dinner', '1500',100001),
+('2015-06-01 15:00', 'dinner', '1500',100000);
+
